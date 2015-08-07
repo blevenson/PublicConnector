@@ -19,6 +19,16 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.HashMap;
 
+/*
+    A chat aplication for friends to start quick conversations
+
+    Working titles:
+        1.  Chap
+            a.  Chat + app = Chap
+            b.  Britsh for pal, or friend
+    @author Brett Levenson
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     private Firebase myFirebaseRef;

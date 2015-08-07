@@ -10,4 +10,8 @@
     <string name="title_activity_delete_me">DeleteMe</string>
     <string name="loginMessage">Login</string>
     <string name="joinButton">Join</string>
+    <string name="createChatRoomButton">Create Chat Room</string>
+    <string name="title_activity_create_chat_room">CreateChatRoom</string>
+    <string name="buttonCreate">Create</string>
+    <string name="createChatRoom">Create Chat Room</string>
 </resources>

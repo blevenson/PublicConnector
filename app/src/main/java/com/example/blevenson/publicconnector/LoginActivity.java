@@ -17,7 +17,10 @@ import android.widget.TextView;
 public class LoginActivity extends AppCompatActivity {
 
     private Spinner selector;
+
     private Button joinButton;
+    private Button createChat;
+
     private TextView message;
     private EditText userName;
 
@@ -42,11 +45,30 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
         userName = (EditText)findViewById(R.id.userName);
         message = (TextView)findViewById(R.id.loginMessage);
+
+        createChat = (Button)findViewById(R.id.createChatbutton);
+        createChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(userName.getText().toString().trim().length() <= 0) {
+                    message.setTextColor(Color.RED);
+                    message.setTextSize(20);
+                    message.setText("Please enter a user name");
+                    return;
+                }else{
+                    message.setTextColor(Color.BLACK);
+                    message.setTextSize(50);
+                    message.setText("Login");
+                }
+                moveToCreateChatActivity();
+            }
+        });
 
         joinButton = (Button)findViewById(R.id.joinButton);
         joinButton.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +99,13 @@ public class LoginActivity extends AppCompatActivity {
         intent.putExtra("chatRoom", chatRoom);
         startActivity(intent);
     }
+
+    private void moveToCreateChatActivity(){
+        Intent intent = new Intent(this, CreateChatRoom.class);
+        intent.putExtra("userName", userName.getText().toString());
+        startActivity(intent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
