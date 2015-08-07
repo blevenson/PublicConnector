@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">PublicConnector</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="message">Messages</string>
+    <string name="sendButton">Send</string>
+    <string name="sendBox">Message</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_delete_me">DeleteMe</string>
+    <string name="loginMessage">Login</string>
+    <string name="joinButton">Join</string>
+</resources>
