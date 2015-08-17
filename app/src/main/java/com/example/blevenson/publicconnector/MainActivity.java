@@ -1,9 +1,11 @@
 package com.example.blevenson.publicconnector;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.EditText;
+import android.support.v7.app.ActionBar;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -51,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(chatRoom);
+
         final EditText messageText = (EditText)findViewById(R.id.messageText);
         final TextView messanger = (TextView)findViewById(R.id.display);
         messanger.setMovementMethod(new ScrollingMovementMethod());
@@ -76,19 +82,20 @@ public class MainActivity extends AppCompatActivity {
         messageText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(event.getKeyCode() == KeyEvent.KEYCODE_ENTER && messageText.getText().toString().trim().length() > 0) {
-                    if(messageText.getText().charAt(0) == '/'){
+                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER && messageText.getText().toString().trim().length() > 0) {
+                    if (messageText.getText().charAt(0) == '/') {
                         //Command
-                        if(messageText.getText().toString().toLowerCase().contains("clear"))
+                        if (messageText.getText().toString().toLowerCase().contains("clear"))
                             messanger.setText("");
-                        else if(messageText.getText().toString().toLowerCase().contains("text") &&
+                        else if (messageText.getText().toString().toLowerCase().contains("text") &&
                                 messageText.getText().toString().toLowerCase().contains("color"))
                             try {
                                 messanger.setTextColor(Color.parseColor(messageText.getText().toString().substring(12).toUpperCase()));
-                            }catch (Exception e){}
+                            } catch (Exception e) {
+                            }
                         else
                             messanger.append("[That is not a valid command]");
-                    }else
+                    } else
                         myFirebaseRef.push().setValue(new Chat(messageText.getText().toString(), userName));
 
                     messageText.setText("");
@@ -119,6 +126,17 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_bar_back:
+                moveHome();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void moveHome(){
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 }

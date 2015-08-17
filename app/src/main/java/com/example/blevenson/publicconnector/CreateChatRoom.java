@@ -1,7 +1,9 @@
 package com.example.blevenson.publicconnector;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -31,6 +33,8 @@ public class CreateChatRoom extends AppCompatActivity {
 
     private String userName;
 
+    private SharedPreferences.Editor editor;
+
     private Firebase myFirebaseRef;
     private DataSnapshot currentDataSnapshot;
 
@@ -51,12 +55,12 @@ public class CreateChatRoom extends AppCompatActivity {
         userName = incoming.getStringExtra("userName");
 
 
-        chatRoomName = (EditText)findViewById(R.id.chatRoomName);
-        password = (EditText)findViewById(R.id.password);
+        chatRoomName = (EditText) findViewById(R.id.chatRoomName);
+        password = (EditText) findViewById(R.id.password);
 
-        errorWindow = (TextView)findViewById(R.id.errorMessage);
+        errorWindow = (TextView) findViewById(R.id.errorMessage);
 
-        create = (Button)findViewById(R.id.buttonCreate);
+        create = (Button) findViewById(R.id.buttonCreate);
 
         myFirebaseRef = new Firebase("https://publicconnector.firebaseio.com/");
 
@@ -65,19 +69,21 @@ public class CreateChatRoom extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 currentDataSnapshot = dataSnapshot;
             }
+
             @Override
-            public void onCancelled(FirebaseError firebaseError) {}
+            public void onCancelled(FirebaseError firebaseError) {
+            }
         });
 
         chatRoomName.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    if(currentDataSnapshot.child(chatRoomName.getText().toString()).exists()) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    if (currentDataSnapshot.child(chatRoomName.getText().toString()).exists()) {
                         errorWindow.setTextColor(Color.RED);
                         errorWindow.setText("That chat room already exists");
-                    }else {
-                        errorWindow.setTextColor(Color.GREEN);
+                    } else {
+                        errorWindow.setTextColor(Color.parseColor("#009933"));
                         errorWindow.setText("That chat room name is avalible");
                     }
                     return true;
@@ -89,23 +95,40 @@ public class CreateChatRoom extends AppCompatActivity {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(chatRoomName.getText().toString().trim().length() <= 0) {
+                if (chatRoomName.getText().toString().trim().length() <= 0) {
                     errorWindow.setTextColor(Color.RED);
                     errorWindow.setText("This field can not be left blank");
-                }else if(currentDataSnapshot.child(chatRoomName.getText().toString()).exists())
+                } else if (currentDataSnapshot.child(chatRoomName.getText().toString()).exists())
                     return;
-                else
+                else {
+                    addRoomToFavroites(chatRoomName.getText().toString());
                     moveToMainActivity();
+                }
             }
         });
 
     }
 
-    private void moveToMainActivity(){
+    private void moveToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("chatRoom", chatRoomName.getText().toString());
         intent.putExtra("userName", userName);
         startActivity(intent);
+    }
+
+    private void addRoomToFavroites(String room) {
+        SharedPreferences settings = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
+        editor = settings.edit();
+
+        editor.putString("FavChatRooms", settings.getString("FavChatRooms", "None") + "," + room);
+        editor.commit();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
     }
 
     @Override
@@ -127,6 +150,17 @@ public class CreateChatRoom extends AppCompatActivity {
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_bar_back:
+                moveHome();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void moveHome() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 }

@@ -13,7 +13,8 @@
         android:id="@+id/buttonCreate"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp" />
+        android:layout_marginBottom="50dp"
+        android:paddingTop="15dp" />
 
     <EditText
         android:layout_width="200dp"
@@ -45,8 +46,8 @@
         android:layout_below="@+id/chatRoomName"
         android:layout_alignStart="@+id/chatRoomName"
         android:textColor="#d82731"
-        android:layout_marginTop="20dp"
-        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:textSize="15dp"
         android:gravity="center"
         android:layout_marginBottom="20dp" />
 
@@ -58,7 +59,9 @@
         android:id="@+id/password"
         android:hint="Password (Optional)"
         android:gravity="center"
+        android:paddingTop="50dp"
+        android:paddingBottom="20dp"
+        android:textSize="15dp"
         android:layout_below="@+id/errorMessage"
-        android:layout_centerHorizontal="true"
-        android:paddingTop="50dp" />
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
