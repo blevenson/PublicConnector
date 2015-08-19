@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,8 +17,15 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.firebase.client.Firebase;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 public class LoginActivity extends AppCompatActivity {
     public static final String PREFS_NAME = "MyPrefsFile";
+    private static Set<String> favorites = new HashSet<String>();
 
     private Spinner selector;
 
@@ -29,13 +37,20 @@ public class LoginActivity extends AppCompatActivity {
 
     private String chatRoom;
 
+    private SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        Log.v("Fave", ("Favorites: " + favorites.toString()));
+
         userName = (EditText)findViewById(R.id.userName);
         message = (TextView)findViewById(R.id.loginMessage);
+
+        Intent intent = getIntent();
+        userName.setText(intent.getStringExtra("name"));
 
         createChat = (Button)findViewById(R.id.createChatbutton);
         createChat.setOnClickListener(new View.OnClickListener() {
@@ -94,7 +109,8 @@ public class LoginActivity extends AppCompatActivity {
 //        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
 //                R.array.chatroom_array, android.R.layout.simple_spinner_item);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,
-                settings.getString("FavChatRooms","Failed").split(","));
+                new ArrayList<String>(favorites));
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         selector.setAdapter(adapter);
 
@@ -144,5 +160,31 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void addToFavs(String in){
+        Firebase myFirebaseRef = new Firebase("https://publicconnector.firebaseio.com/");
+
+        while(favorites.size() > 2){
+            String leaving = favorites.iterator().next();
+            favorites.remove(leaving);
+            myFirebaseRef.child(leaving).removeValue();
+        }
+        Log.v("Fave", ("Added to favorites:" + in));
+        favorites.add(in);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveFavs();
+    }
+
+    private void saveFavs(){
+        SharedPreferences settings = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
+        editor = settings.edit();
+
+        editor.putStringSet("FavRooms", favorites);
+        editor.commit();
     }
 }

@@ -135,8 +135,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveHome();
+    }
+
     private void moveHome(){
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("name", userName);
         startActivity(intent);
     }
 }

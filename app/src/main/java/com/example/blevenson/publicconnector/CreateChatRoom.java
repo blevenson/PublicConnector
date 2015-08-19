@@ -101,7 +101,8 @@ public class CreateChatRoom extends AppCompatActivity {
                 } else if (currentDataSnapshot.child(chatRoomName.getText().toString()).exists())
                     return;
                 else {
-                    addRoomToFavroites(chatRoomName.getText().toString());
+                    //addRoomToFavroites(chatRoomName.getText().toString());
+                    LoginActivity.addToFavs(chatRoomName.getText().toString());
                     moveToMainActivity();
                 }
             }
@@ -159,8 +160,15 @@ public class CreateChatRoom extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveHome();
+    }
+
     private void moveHome() {
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("name", userName);
         startActivity(intent);
     }
 }
