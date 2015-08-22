@@ -64,7 +64,7 @@ public class CreateChatRoom extends AppCompatActivity {
 
         myFirebaseRef = new Firebase("https://publicconnector.firebaseio.com/");
 
-        myFirebaseRef.addValueEventListener(new ValueEventListener() {
+        myFirebaseRef.child("/Rooms").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 currentDataSnapshot = dataSnapshot;
@@ -103,6 +103,10 @@ public class CreateChatRoom extends AppCompatActivity {
                 else {
                     //addRoomToFavroites(chatRoomName.getText().toString());
                     LoginActivity.addToFavs(chatRoomName.getText().toString());
+
+                    if(password.getText().toString().trim().length() > 0)
+                        myFirebaseRef.child("passwords/" + chatRoomName.getText().toString()).setValue(password.getText().toString());
+
                     moveToMainActivity();
                 }
             }

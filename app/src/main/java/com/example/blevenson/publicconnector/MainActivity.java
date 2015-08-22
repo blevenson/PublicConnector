@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         final TextView messanger = (TextView)findViewById(R.id.display);
         messanger.setMovementMethod(new ScrollingMovementMethod());
 
-        myFirebaseRef = new Firebase("https://publicconnector.firebaseio.com/").child(chatRoom);
+        myFirebaseRef = new Firebase("https://publicconnector.firebaseio.com/Rooms").child(chatRoom);
 
         myFirebaseRef.addValueEventListener(new ValueEventListener() {
             @Override

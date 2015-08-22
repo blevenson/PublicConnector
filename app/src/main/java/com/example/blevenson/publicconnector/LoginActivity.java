@@ -3,6 +3,7 @@ package com.example.blevenson.publicconnector;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -77,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(userName.getText().toString().trim().length() <= 0) {
                     message.setTextColor(Color.RED);
                     message.setTextSize(20);
@@ -194,5 +196,15 @@ public class LoginActivity extends AppCompatActivity {
 
         editor.putStringSet("FavRooms", favorites);
         editor.commit();
+    }
+
+    private void requestPassword(){
+        Bundle bundle = new Bundle();
+        bundle.putString("roomName", chatRoom);
+
+        DialogFragment newFragment = new PasswordFragment();
+        newFragment.setArguments(bundle);
+
+        newFragment.show(getSupportFragmentManager(), "password");
     }
 }
