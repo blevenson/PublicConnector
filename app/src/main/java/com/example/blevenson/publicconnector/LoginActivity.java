@@ -18,7 +18,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +30,12 @@ import java.util.Set;
 
 public class LoginActivity extends AppCompatActivity {
     public static final String PREFS_NAME = "MyPrefsFile";
-    private static Set<String> favorites = new HashSet<String>();
+    private static ArrayList<String> favorites = new ArrayList<String>();
+
+    private static boolean runOnce = false;
+
+    private Firebase myFirebaseRef;
+    private DataSnapshot currentDataSnapshot;
 
     private Spinner selector;
 
@@ -44,11 +52,17 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
         setContentView(R.layout.activity_login);
 
-        readFavs();
+        if(!runOnce) {
+            readFavs();
+            runOnce = true;
+        }
 
         Log.v("Fave", ("Favorites: " + favorites.toString()));
+
+        myFirebaseRef = new Firebase("https://publicconnector.firebaseio.com/");
 
         userName = (EditText)findViewById(R.id.userName);
         message = (TextView)findViewById(R.id.loginMessage);
@@ -74,11 +88,21 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        myFirebaseRef.child("/passwords").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                currentDataSnapshot = dataSnapshot;
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+            }
+        });
+
         joinButton = (Button)findViewById(R.id.joinButton);
         joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if(userName.getText().toString().trim().length() <= 0) {
                     message.setTextColor(Color.RED);
                     message.setTextSize(20);
@@ -91,8 +115,12 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 if(chatRoom != null) {
+                    //If it has a password
+                    if(currentDataSnapshot.child(chatRoom).exists())
+                        requestPassword();
                     //Move to main activty
-                    moveToMainActivity();
+                    else
+                        moveToMainActivity();
                 }
             }
         });
@@ -113,8 +141,10 @@ public class LoginActivity extends AppCompatActivity {
         selector = (Spinner)findViewById(R.id.roomSelector);
 //        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
 //                R.array.chatroom_array, android.R.layout.simple_spinner_item);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,
+//                new ArrayList<String>(favorites));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,
-                new ArrayList<String>(favorites));
+                favorites);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         selector.setAdapter(adapter);
@@ -170,10 +200,10 @@ public class LoginActivity extends AppCompatActivity {
     public static void addToFavs(String in){
         Firebase myFirebaseRef = new Firebase("https://publicconnector.firebaseio.com/");
 
-        while(favorites.size() > 2){
-            String leaving = favorites.iterator().next();
-            favorites.remove(leaving);
-            myFirebaseRef.child(leaving).removeValue();
+        if(favorites.size() > 2){
+            myFirebaseRef.child("Rooms/" + favorites.get(0)).removeValue();
+            myFirebaseRef.child("passwords/" + favorites.get(0)).removeValue();
+            favorites.remove(0);
         }
         Log.v("Fave", ("Added to favorites:" + in));
         favorites.add(in);
@@ -186,15 +216,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void readFavs(){
+        Log.v("Fave", ("Before Favorites: " + favorites.toString()));
         SharedPreferences settings = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
-        favorites = settings.getStringSet("FavRooms", new HashSet<String>(Arrays.asList("Main")));
+        favorites = new ArrayList<String>(settings.getStringSet("FavRooms", new HashSet<String>(Arrays.asList("Main"))));
+        Log.v("Fave", ("Read Favorites: " + favorites.toString()));
     }
 
     private void saveFavs(){
         SharedPreferences settings = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
         editor = settings.edit();
 
-        editor.putStringSet("FavRooms", favorites);
+        editor.putStringSet("FavRooms", new HashSet<String>(favorites));
         editor.commit();
     }
 

@@ -43,7 +43,8 @@ public class PasswordFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         if(!pass.getText().toString().equals(myFirebaseRef.getKey())){
                             //Wrong password
-                        }
+                        }else
+                            return;
 
                     }
                 })
