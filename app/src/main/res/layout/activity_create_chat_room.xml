@@ -13,7 +13,8 @@
         android:id="@+id/buttonCreate"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="25dp"
         android:paddingTop="15dp" />
 
     <EditText
@@ -49,7 +50,7 @@
         android:layout_marginTop="10dp"
         android:textSize="15dp"
         android:gravity="center"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginBottom="10dp" />
 
     <EditText
         android:layout_width="300dp"
@@ -63,5 +64,6 @@
         android:paddingBottom="20dp"
         android:textSize="15dp"
         android:layout_below="@+id/errorMessage"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp" />
 </RelativeLayout>

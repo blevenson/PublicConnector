@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.firebase.client.Firebase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,6 +44,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        readFavs();
 
         Log.v("Fave", ("Favorites: " + favorites.toString()));
 
@@ -178,6 +181,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         saveFavs();
+    }
+
+    private void readFavs(){
+        SharedPreferences settings = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
+        favorites = settings.getStringSet("FavRooms", new HashSet<String>(Arrays.asList("Main")));
     }
 
     private void saveFavs(){
